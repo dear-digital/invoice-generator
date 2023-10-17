@@ -9,22 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Check for /attempt in comment
       id: check-comment
       run: |
         comment="${{ github.event.comment.body }}"
         if echo "$comment" | grep -q "/attempt"; then
-          echo "::set-output name=attempt::true"
+          echo "attempt=true" >> $GITHUB_ENV
         else
-          echo "::set-output name=attempt::false"
+          echo "attempt=false" >> $GITHUB_ENV
         fi
       shell: bash
 
     - name: Checkout Evaluation Repository
       if: steps.check-comment.outputs.attempt == 'true'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         repository: dear-digital/evaluation
         token: ${{ secrets.EVALUATION_TOKEN }}
