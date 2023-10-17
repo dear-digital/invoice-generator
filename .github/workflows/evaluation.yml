@@ -1,0 +1,59 @@
+name: Evaluation Action
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  evaluate-contributor:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Check for /attempt in comment
+      id: check-comment
+      run: |
+        comment="${{ github.event.comment.body }}"
+        if echo "$comment" | grep -q "/attempt"; then
+          echo "::set-output name=attempt::true"
+        else
+          echo "::set-output name=attempt::false"
+        fi
+      shell: bash
+
+    - name: Checkout Evaluation Repository
+      if: steps.check-comment.outputs.attempt == 'true'
+      uses: actions/checkout@v2
+      with:
+        repository: dear-digital/evaluation
+        token: ${{ secrets.EVALUATION_TOKEN }}
+
+    - name: Evaluate and post result
+      if: steps.check-comment.outputs.attempt == 'true'
+      run: |
+        # Checking for user file existence
+        username="${{ github.event.comment.user.login }}"
+        filepath="./users/$username.json"
+        
+        if [[ -f "$filepath" ]]; then
+          echo "File exists"
+          result="eval present"
+        else
+          echo "File does not exist, creating..."
+          touch "$filepath"
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add "$filepath"
+          git commit -m "Adding new user file for $username"
+          git push
+          result="new"
+        fi
+
+        # Use GitHub API to comment on the issue
+        curl -s \
+          -X POST \
+          -H "Authorization: token ${{ secrets.EVALUATION_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -d "{\"body\":\"$result\"}" \
+          "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments"
