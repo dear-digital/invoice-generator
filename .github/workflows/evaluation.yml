@@ -16,9 +16,9 @@ jobs:
       run: |
         comment="${{ github.event.comment.body }}"
         if echo "$comment" | grep -q "/attempt"; then
-          echo "attempt=true" >> $GITHUB_ENV
+          echo "::set-output name=attempt::true"
         else
-          echo "attempt=false" >> $GITHUB_ENV
+          echo "::set-output name=attempt::false"
         fi
       shell: bash
 
