@@ -128,6 +128,24 @@ const InvoiceForm = () => {
     calculateTotals(updatedServices);
   };
 
+  const isPrintDisabled = () => {
+    const hasEmptyRequiredFields = [
+      formData.from,
+      formData.to,
+      formData.invoiceNo,
+      formData.invoiceDate,
+      formData.dueDate,
+      formData.taxRate,
+    ].some((field) => field.trim() === "");
+
+    //console.log(hasEmptyRequiredFields);
+
+    const hasInvalidServices = formData.services.some(
+      (service) => !isServiceValid(service)
+    );
+
+    return hasEmptyRequiredFields || hasInvalidServices;
+  }
   const calculateTotals = (services) => {
     const subtotal = services
       .reduce((sum, service) => sum + parseFloat(service.amount || 0), 0)
@@ -170,7 +188,7 @@ const InvoiceForm = () => {
         </Flex>
 
         <Flex style={{ paddingBottom: "20px" }}>
-          <FormControl id="from" w="300px">
+          <FormControl id="from" w="300px" isRequired>
             <FormLabel>From</FormLabel>
             <Input
               name="from"
@@ -192,7 +210,7 @@ const InvoiceForm = () => {
         </Flex>
 
         <Flex style={{ paddingBottom: "20px" }}>
-          <FormControl id="to" w="300px">
+          <FormControl id="to" w="300px" isRequired>
             <FormLabel>To</FormLabel>
             <Input
               name="to"
@@ -202,7 +220,7 @@ const InvoiceForm = () => {
             />
           </FormControl>
           <Spacer />
-          <FormControl id="invoiceDate" w="300px">
+          <FormControl id="invoiceDate" w="300px" isRequired>
             <FormLabel>Invoice Date</FormLabel>
             <Input
               type="date"
@@ -224,7 +242,7 @@ const InvoiceForm = () => {
             />
           </FormControl>
           <Spacer />
-          <FormControl id="dueDate" w="300px">
+          <FormControl id="dueDate" w="300px" isRequired>
             <FormLabel>Due Date</FormLabel>
             <Input
               type="date"
@@ -251,7 +269,7 @@ const InvoiceForm = () => {
             </Select>
           </FormControl>
           <Spacer />
-          <FormControl id="taxRate" w="300px">
+          <FormControl id="taxRate" w="300px" isRequired>
             <FormLabel>Tax Rate (%)</FormLabel>
             <Input
               name="taxRate"
@@ -264,53 +282,57 @@ const InvoiceForm = () => {
 
         <Divider style={{ margin: "20px 0" }} />
 
-        <FormLabel>Services</FormLabel>
-        <Stack spacing={4} gap={4}>
-          {formData.services.map((service, index) => (
-            <Flex key={index} align="center">
-              <Input
-                width="45px"
-                name="serialNumber"
-                isReadOnly
-                value={index + 1}
-                style={{ marginRight: "8px" }}
-              />
-
-              <Input
-                required
-                width="700px"
-                name="description"
-                placeholder="Service Description"
-                value={service.description}
-                onChange={(e) => handleServiceChange(e, index)}
-              />
-              <Spacer />
-              <span style={{ margin: "0 5px 0 8px" }}>{formData.currency}</span>
-
-              <Input
-                required
-                width="150px"
-                name="amount"
-                type="number"
-                placeholder="Amount"
-                value={service.amount}
-                onChange={(e) => handleServiceChange(e, index)}
-              />
-              <Spacer />
-
-              <Tooltip label="Remove this Service" className="print-hidden">
-                <IconButton
-                  isRound={true}
-                  colorScheme="red"
-                  aria-label="Remove"
-                  size="sm"
-                  icon={<CloseIcon />}
-                  onClick={() => removeService(index)}
+        <FormControl id="services" isRequired>
+          <FormLabel>Services</FormLabel>
+          <Stack spacing={4} gap={4}>
+            {formData.services.map((service, index) => (
+              <Flex key={index} align="center">
+                <Input
+                  width="45px"
+                  name="serialNumber"
+                  isReadOnly
+                  value={index + 1}
+                  style={{ marginRight: "8px" }}
                 />
-              </Tooltip>
-            </Flex>
-          ))}
-        </Stack>
+
+                <Input
+                  required
+                  width="700px"
+                  name="description"
+                  placeholder="Service Description"
+                  value={service.description}
+                  onChange={(e) => handleServiceChange(e, index)}
+                />
+                <Spacer />
+                <span style={{ margin: "0 5px 0 8px" }}>
+                  {formData.currency}
+                </span>
+
+                <Input
+                  required
+                  width="150px"
+                  name="amount"
+                  type="number"
+                  placeholder="Amount"
+                  value={service.amount}
+                  onChange={(e) => handleServiceChange(e, index)}
+                />
+                <Spacer />
+
+                <Tooltip label="Remove this Service" className="print-hidden">
+                  <IconButton
+                    isRound={true}
+                    colorScheme="red"
+                    aria-label="Remove"
+                    size="sm"
+                    icon={<CloseIcon />}
+                    onClick={() => removeService(index)}
+                  />
+                </Tooltip>
+              </Flex>
+            ))}
+          </Stack>
+        </FormControl>
 
         <div style={{ marginTop: "20px" }} className="print-hidden">
           <Button
@@ -378,6 +400,7 @@ const InvoiceForm = () => {
               colorScheme="blue"
               variant="solid"
               onClick={() => window.print()}
+              isDisabled={isPrintDisabled()}
             >
               Print Invoice
             </Button>
