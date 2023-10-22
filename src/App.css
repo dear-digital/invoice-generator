@@ -13,6 +13,18 @@
         display: block !important;
       }
 
+      /* Adjust page margins */
+      @page {
+        margin: 20mm; /* Adjust the margin values as needed */
+      }
+
+      /* Scale content to fit within the adjusted margins */
+      body {
+        margin: 0;
+        transform: scale(0.9); /* Adjust the scale factor as needed */
+        transform-origin: top left;
+      }
+
     }
 
 .print-element{
