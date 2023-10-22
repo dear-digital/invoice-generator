@@ -62,6 +62,11 @@ const InvoiceUI = () => {
   const [totalAmount, setTotalAmount] = useState("0.00");
 
   useEffect(() => {
+    // Calculate totals when the component mounts
+    calculateTotals(formData.services);
+  }, []);
+    
+  useEffect(() => {
     if (formData.customDataSaving) {
       try {
           localStorage.setItem("invoiceFormData", JSON.stringify(formData));
@@ -75,7 +80,7 @@ const InvoiceUI = () => {
         const parsedData = JSON.parse(savedData);
         // Set customDataSaving to false and keep the rest of the data
         parsedData.customDataSaving = false;
-        calculateTotals(parsedData.services)
+        //calculateTotals(parsedData.services)
         // Save the modified data back to local storage
         localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
         
