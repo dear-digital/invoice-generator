@@ -29,12 +29,14 @@ const InvoiceUI = () => {
       billingPeriod: parsedData ? parsedData.billingPeriod : "",
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
-      currency: parsedData ? parsedData.currency : "USD",
+      currency: parsedData ? parsedData.currency : "Rs",
       taxRate: parsedData ? parsedData.taxRate : 0,
-      services:
-        parsedData && Array.isArray(parsedData.services)
-          ? parsedData.services
-          : [],
+      services: parsedData.services.map((service, index) => ({
+        ...service,
+        serialNumber: index + 1,
+      }))
+        ? parsedData.services
+        : [],
       customDataSaving: parsedData ? parsedData.customDataSaving : false,
     };
   });
@@ -85,16 +87,30 @@ const InvoiceUI = () => {
   };
 
   const addService = () => {
-    setFormData((prevData) => ({
+    /* setFormData((prevData) => ({
       ...prevData,
       services: [...prevData.services, { description: "", amount: "" }],
-    }));
+    })); */
+      console.log(formData.services.length);
+      const newService = {
+        description: "",
+        amount: "",
+        serialNumber: formData.services.length + 1,
+      };
+      setFormData((prevData) => ({
+        ...prevData,
+        services: [...prevData.services, newService],
+      }));
   };
 
   const removeService = (index) => {
     const updatedServices = [...formData.services];
     updatedServices.splice(index, 1);
 
+    // Update serial numbers
+    for (let i = index; i < updatedServices.length; i++) {
+      updatedServices[i].serialNumber = i + 1;
+    }
     setFormData((prevData) => ({
       ...prevData,
       services: updatedServices,
@@ -240,13 +256,20 @@ const InvoiceUI = () => {
             />
           </FormControl>
         </Flex>
-        
+
         <FormLabel>Services</FormLabel>
         <Stack spacing={4} gap={4}>
           {formData.services.map((service, index) => (
             <Flex key={index}>
               <Input
-                width="700px"
+                width="10px"
+                name="serialNumber"
+                value={service.serialNumber}
+                isReadOnly
+              />
+              <span> {service.serialNumber} </span>
+              <Input
+                width="600px"
                 name="description"
                 placeholder="Service Description"
                 value={service.description}
@@ -262,14 +285,12 @@ const InvoiceUI = () => {
                 onChange={(e) => handleServiceChange(e, index)}
               />
               <Spacer />
-              <Button onClick={() => removeService(index)}>
-                Remove
-              </Button>
+              <Button onClick={() => removeService(index)}>Remove</Button>
             </Flex>
           ))}
         </Stack>
         <div style={{ marginTop: "20px" }}>
-            <Button onClick={addService}>Add Service</Button>
+          <Button onClick={addService}>Add Service</Button>
         </div>
 
         <div style={{ marginTop: "20px" }}>
