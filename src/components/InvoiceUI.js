@@ -43,6 +43,7 @@ const InvoiceUI = () => {
     return {
       invoiceNo: parsedData ? parsedData.invoiceNo : "",
       invoiceDate: parsedData ? parsedData.invoiceDate : "",
+      dueDate: parsedData ? parsedData.dueDate : "",
       billingPeriod: parsedData ? parsedData.billingPeriod : "",
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
@@ -63,7 +64,8 @@ const InvoiceUI = () => {
   useEffect(() => {
     if (formData.customDataSaving) {
       try {
-        localStorage.setItem("invoiceFormData", JSON.stringify(formData));
+          localStorage.setItem("invoiceFormData", JSON.stringify(formData));
+          calculateTotals(formData.services);
       } catch (error) {
         console.error("Error saving data:", error);
       }
@@ -73,8 +75,10 @@ const InvoiceUI = () => {
         const parsedData = JSON.parse(savedData);
         // Set customDataSaving to false and keep the rest of the data
         parsedData.customDataSaving = false;
+        calculateTotals(parsedData.services)
         // Save the modified data back to local storage
         localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
+        
       }
     }
   }, [formData.customDataSaving, formData]);
@@ -206,10 +210,11 @@ const InvoiceUI = () => {
           <FormControl id="invoiceDate" w="300px">
             <FormLabel>Invoice Date</FormLabel>
             <Input
+              type="date"
               name="invoiceDate"
               placeholder="Date"
               onChange={handleChange}
-              value={formData.date}
+              value={formData.invoiceDate}
             />
           </FormControl>
         </Flex>
@@ -227,6 +232,7 @@ const InvoiceUI = () => {
           <FormControl id="dueDate" w="300px">
             <FormLabel>Due Date</FormLabel>
             <Input
+              type="date"
               name="dueDate"
               placeholder="Date"
               onChange={handleChange}
@@ -244,8 +250,9 @@ const InvoiceUI = () => {
               onChange={handleChange}
               value={formData.currency}
             >
-              <option value="Rs.">Rs.</option>
-              <option value="USD">USD</option>
+              <option value="₹"> Rupees (₹)</option>
+              <option value="$"> Dollar ($)</option>
+              <option value="€"> Euro (€)</option>
             </Select>
           </FormControl>
           <Spacer />
@@ -339,7 +346,6 @@ const InvoiceUI = () => {
         <div style={{ width: "350px", margin: "20px 0 auto auto" }}>
           <TableContainer>
             <Table variant="simple" size="md">
-              <TableCaption>Summary</TableCaption>
               <Tbody>
                 <Tr>
                   <Td>Subtotal</Td>
@@ -364,19 +370,6 @@ const InvoiceUI = () => {
               </Tfoot>
             </Table>
           </TableContainer>
-          {/* <Card variant="filled">
-          <CardBody>
-            <Text>
-              Subtotal: {formData.currency} {subtotal}
-            </Text>
-            <Text>
-              Tax: {formData.currency} {tax}
-            </Text>
-            <Text>
-              Total Amount: {formData.currency} {totalAmount}
-            </Text>
-          </CardBody>
-        </Card> */}
         </div>
 
         <div style={{ margin: "0 auto", width: "fit-content" }}>
