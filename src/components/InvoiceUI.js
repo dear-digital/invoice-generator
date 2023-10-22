@@ -16,7 +16,24 @@ import {
   Flex,
   Spacer,
   Box,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Tooltip,
+  Highlight,
+  IconButton,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
 } from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
 
 const InvoiceUI = () => {
   const [formData, setFormData] = useState(() => {
@@ -101,7 +118,8 @@ const InvoiceUI = () => {
       services: updatedServices,
     }));
     calculateTotals(updatedServices);
-  };
+    };
+    
 
   const calculateTotals = (services) => {
     const subtotal = services.reduce(
@@ -245,17 +263,17 @@ const InvoiceUI = () => {
         <FormLabel>Services</FormLabel>
         <Stack spacing={4} gap={4}>
           {formData.services.map((service, index) => (
-            <Flex key={index}>
+            <Flex key={index} align="center">
               <Input
-                width="50px"
+                width="45px"
                 name="serialNumber"
-                placeholder="No."
-                value={service.serialNumber}
-                onChange={(e) => handleServiceChange(e, index)}
+                isReadOnly
+                value={index + 1}
+                style={{ marginRight: "8px" }}
               />
-              <Spacer />
+
               <Input
-                width="600px"
+                width="700px"
                 name="description"
                 placeholder="Service Description"
                 value={service.description}
@@ -271,40 +289,104 @@ const InvoiceUI = () => {
                 onChange={(e) => handleServiceChange(e, index)}
               />
               <Spacer />
-              <Button onClick={() => removeService(index)}>Remove</Button>
+
+              <Tooltip label="Remove this Service">
+                <IconButton
+                  isRound={true}
+                  colorScheme="blue"
+                  aria-label="Remove"
+                  size="sm"
+                  icon={<CloseIcon />}
+                  onClick={() => removeService(index)}
+                />
+              </Tooltip>
             </Flex>
           ))}
         </Stack>
+
         <div style={{ marginTop: "20px" }}>
           <Button onClick={addService}>Add Service</Button>
         </div>
 
         <div style={{ marginTop: "20px" }}>
-          <Checkbox
-            name="customDataSaving"
-            onChange={handleChange}
-            isChecked={formData.customDataSaving}
-          >
-            Save data for future use
-          </Checkbox>
+          <Card>
+            <CardBody>
+              <Checkbox
+                spacing="0.5rem"
+                size="md"
+                name="customDataSaving"
+                onChange={handleChange}
+                isChecked={formData.customDataSaving}
+              >
+                <Text fontWeight="bold" fontSize="md">
+                  <Highlight
+                    query="Save data"
+                    styles={{
+                      px: "1",
+                      py: "1",
+                      fontWeight: "normal",
+                      bg: "blue.100",
+                    }}
+                  >
+                    Save data for future use
+                  </Highlight>
+                </Text>
+              </Checkbox>
+            </CardBody>
+          </Card>
         </div>
 
-        <div style={{ marginTop: "20px" }}>
-          <Button type="submit">Generate Invoice</Button>
+        <div style={{ width: "350px", margin: "20px 0 auto auto" }}>
+          <TableContainer>
+            <Table variant="simple" size="md">
+              <TableCaption>Summary</TableCaption>
+              <Tbody>
+                <Tr>
+                  <Td>Subtotal</Td>
+                  <Td isNumeric>
+                    {formData.currency} {subtotal}
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td>Tax</Td>
+                  <Td isNumeric>
+                    {formData.currency} {tax}
+                  </Td>
+                </Tr>
+              </Tbody>
+              <Tfoot>
+                <Tr>
+                  <Th fontSize="14px">Total Amount</Th>
+                  <Th isNumeric fontSize="15px">
+                    {formData.currency} {totalAmount}
+                  </Th>
+                </Tr>
+              </Tfoot>
+            </Table>
+          </TableContainer>
+          {/* <Card variant="filled">
+          <CardBody>
+            <Text>
+              Subtotal: {formData.currency} {subtotal}
+            </Text>
+            <Text>
+              Tax: {formData.currency} {tax}
+            </Text>
+            <Text>
+              Total Amount: {formData.currency} {totalAmount}
+            </Text>
+          </CardBody>
+        </Card> */}
+        </div>
+
+        <div style={{ margin: "0 auto", width: "fit-content" }}>
+          <Button style={{ marginTop: "150px" }} type="submit">
+            Generate Invoice
+          </Button>
         </div>
       </form>
 
-      <div>
-        <Text>
-          Subtotal: {formData.currency} {subtotal}
-        </Text>
-        <Text>
-          Tax: {formData.currency} {tax}
-        </Text>
-        <Text>
-          Total Amount: {formData.currency} {totalAmount}
-        </Text>
-      </div>
+      <div style={{ margin: "100px" }}></div>
     </Container>
   );
 };
