@@ -7,6 +7,10 @@ import {
   Input,
   Textarea,
   Checkbox,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
 } from "@chakra-ui/react";
 
 const InvoiceForm = () => {
@@ -50,8 +54,6 @@ const InvoiceForm = () => {
         const parsedData = JSON.parse(savedData);
         // Set customDataSaving to false and keep the rest of the data
         parsedData.customDataSaving = false;
-        // Update the form state
-        //setFormData(parsedData);
         // Save the modified data back to local storage
         localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
       }
