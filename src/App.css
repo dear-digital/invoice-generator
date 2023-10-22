@@ -12,6 +12,10 @@
       .print-element{
         display: block !important;
       }
+
+      body{
+        margin: 5px !important;
+      }
     }
 
 .print-element{

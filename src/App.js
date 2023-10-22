@@ -10,7 +10,7 @@ function App() {
   return (
     <ChakraProvider>
       <CSSReset />
-      <InvoiceUI />
+      <InvoiceForm />
     </ChakraProvider>
   );
 }

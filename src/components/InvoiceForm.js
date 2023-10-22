@@ -1,37 +1,29 @@
 import React, { useState, useEffect } from "react";
-import jsPDF from "jspdf";
+import "../App.css";
 import {
   Container,
   Heading,
   Button,
   Input,
-  Textarea,
   Checkbox,
   FormControl,
   FormLabel,
-  FormHelperText,
   Stack,
   Text,
   Select,
   Flex,
   Spacer,
   Box,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
   Tooltip,
-  Highlight,
   IconButton,
   Table,
-  Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
+  Divider,
+  AbsoluteCenter,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
@@ -149,36 +141,30 @@ const InvoiceForm = () => {
     setTotalAmount(totalAmount);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    generatePDF(formData);
-  };
-
-  const generatePDF = (formData) => {
-    const doc = new jsPDF();
-    doc.text("Invoice Details", 10, 10);
-    doc.text(`Invoice No: ${formData.invoiceNo}`, 10, 20);
-    doc.text(`Invoice Date: ${formData.invoiceDate}`, 10, 30);
-    doc.text(`Billing Period: ${formData.billingPeriod}`, 10, 40);
-    doc.text(`From: ${formData.from}`, 10, 50);
-    doc.text(`To: ${formData.to}`, 10, 60);
-    doc.text(`Currency: ${formData.currency}`, 10, 70);
-    doc.text(`Tax Rate: ${formData.taxRate}%`, 10, 80);
-
-    doc.save("invoice.pdf");
-  };
-
   return (
     <Container maxW="1000px">
       <Heading
         as="h1"
         size="xl"
         textAlign="center"
-        style={{ padding: "50px 10px" }}
+        style={{ padding: "50px 10px 10px 10px" }}
+        className="print-hidden"
       >
         Invoice Generator
       </Heading>
-      <form onSubmit={handleSubmit}>
+
+      <Heading
+        as="h2"
+        size="lg"
+        textAlign="left"
+        style={{ textTransform: "uppercase" }}
+        className="print-element"
+      >
+        Invoice
+      </Heading>
+
+      <Divider style={{ margin: "20px 0" }} />
+      <form>
         <Flex style={{ paddingBottom: "20px" }}>
           <Spacer />
         </Flex>
@@ -228,7 +214,7 @@ const InvoiceForm = () => {
           </FormControl>
         </Flex>
         <Flex style={{ paddingBottom: "20px" }}>
-          <FormControl id="billingPeriod" w="200px">
+          <FormControl id="billingPeriod" w="300px">
             <FormLabel>Billing Period</FormLabel>
             <Input
               name="billingPeriod"
@@ -276,6 +262,8 @@ const InvoiceForm = () => {
           </FormControl>
         </Flex>
 
+        <Divider style={{ margin: "20px 0" }} />
+
         <FormLabel>Services</FormLabel>
         <Stack spacing={4} gap={4}>
           {formData.services.map((service, index) => (
@@ -297,6 +285,8 @@ const InvoiceForm = () => {
                 onChange={(e) => handleServiceChange(e, index)}
               />
               <Spacer />
+              <span style={{ margin: "0 5px 0 8px" }}>{formData.currency}</span>
+
               <Input
                 required
                 width="150px"
@@ -308,7 +298,7 @@ const InvoiceForm = () => {
               />
               <Spacer />
 
-              <Tooltip label="Remove this Service">
+              <Tooltip label="Remove this Service" className="print-hidden">
                 <IconButton
                   isRound={true}
                   colorScheme="blue"
@@ -322,7 +312,7 @@ const InvoiceForm = () => {
           ))}
         </Stack>
 
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: "20px" }} className="print-hidden">
           <Button
             onClick={addService}
             isDisabled={isAddServiceButtonDisabled()}
@@ -331,35 +321,26 @@ const InvoiceForm = () => {
           </Button>
         </div>
 
-        <div style={{ marginTop: "20px" }}>
-          <Card>
-            <CardBody>
-              <Checkbox
-                spacing="0.5rem"
-                size="md"
-                name="customDataSaving"
-                onChange={handleChange}
-                isChecked={formData.customDataSaving}
-              >
-                <Text fontWeight="bold" fontSize="md">
-                  <Highlight
-                    query="Save data"
-                    styles={{
-                      px: "1",
-                      py: "1",
-                      fontWeight: "normal",
-                      bg: "blue.100",
-                    }}
-                  >
-                    Save data for future use
-                  </Highlight>
-                </Text>
-              </Checkbox>
-            </CardBody>
-          </Card>
+        <Divider style={{ margin: "20px 0" }} />
+
+        <div style={{ marginTop: "20px" }} className="print-hidden">
+          <Checkbox
+            spacing="0.5rem"
+            size="md"
+            name="customDataSaving"
+            onChange={handleChange}
+            isChecked={formData.customDataSaving}
+          >
+            <Text fontWeight="bold" fontSize="md">
+              Save Data for Future Use
+            </Text>
+          </Checkbox>
         </div>
 
-        <div style={{ width: "350px", margin: "20px 0 auto auto" }}>
+        <div
+          style={{ width: "350px", margin: "20px 0 auto auto" }}
+          className="print-media"
+        >
           <TableContainer>
             <Table variant="simple" size="md">
               <Tbody>
@@ -375,27 +356,47 @@ const InvoiceForm = () => {
                     {formData.currency} {tax}
                   </Td>
                 </Tr>
-              </Tbody>
-              <Tfoot>
                 <Tr>
-                  <Th fontSize="14px">Total Amount</Th>
+                  <Th fontSize="15px">Total Amount</Th>
                   <Th isNumeric fontSize="15px">
                     {formData.currency} {totalAmount}
                   </Th>
                 </Tr>
-              </Tfoot>
+              </Tbody>
             </Table>
           </TableContainer>
         </div>
 
-        <div style={{ margin: "0 auto", width: "fit-content" }}>
-          <Button style={{ marginTop: "150px" }} type="submit">
-            Generate Invoice
-          </Button>
+        <div
+          style={{ margin: "0 auto", width: "fit-content" }}
+          className="print-hidden"
+        >
+          <div style={{ marginTop: "20px" }}>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={() => window.print()}
+            >
+              Print Invoice
+            </Button>
+          </div>
         </div>
       </form>
-
-      <div style={{ margin: "100px" }}></div>
+      <Heading
+        as="h3"
+        size="sm"
+        textAlign="left"
+        style={{ textTransform: "uppercase" }}
+        className="print-element"
+      >
+        <Box position="relative" padding="10">
+          <Divider />
+          <AbsoluteCenter bg="white" px="4">
+            Thank You
+          </AbsoluteCenter>
+        </Box>
+      </Heading>
+      <div style={{ margin: "80px" }}></div>
     </Container>
   );
 };
