@@ -45,7 +45,12 @@ const PDFGenerator = ({ formData }) => {
 
         // Declaration
         doc.text('Declaration', 10, 230);
-        doc.text('I declare that all the details filled above are correct up to my knowledge.', 20, 240);
+        doc.text('I hereby declare that the information provided in this invoice is true to the best of my knowledge.', 10, 240);
+
+          // Declaration
+        doc.text('Signature', 10, 260);
+        doc.text(formData.name, 10, 270);
+  
 
         // Save the PDF
         doc.save('invoice.pdf');

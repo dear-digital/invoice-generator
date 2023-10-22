@@ -324,7 +324,7 @@ const InvoiceForm = () => {
                     
                         
                         <Typography sx={fieldPadding} paragraph={fieldMargin} align='center'>
-                        <Checkbox {...label} /> I declare that all the details filled above are correct upto my knowlegde.
+                        <Checkbox {...label} /> I hereby declare that the information provided in this invoice is true to the best of my knowledge.
                         </Typography>
                     
                     <Grid item xs={12}>
