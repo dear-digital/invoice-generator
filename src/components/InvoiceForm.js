@@ -21,24 +21,18 @@ const InvoiceForm = () => {
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
       services: parsedData ? parsedData.services : "",
-      customDataSaving: parsedData ? parsedData.customDataSaving : formData.customDataSaving,
+      customDataSaving: parsedData ? parsedData.customDataSaving : false,
     };
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    //console.log(value);
-
     const newValue = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => ({
       ...prevData,
       [name]: newValue,
     }));
-    console.log(formData.customDataSaving);
-    // Update local storage here for all fields when any field is edited
-    
   };
 
   useEffect(() => {
@@ -48,21 +42,20 @@ const InvoiceForm = () => {
       } catch (error) {
         console.error("Error saving data:", error);
       }
+    } else {
+      // Remove the data from local storage when customDataSaving is unchecked
+      localStorage.removeItem("invoiceFormData");
     }
-    else {
-      formData.customDataSaving = false;
-    }
-  }, [formData]);
+  }, [formData.customDataSaving, formData]);
 
   useEffect(() => {
-
     // Set the "Save data for future use" checkbox based on the stored data
     const savedData = localStorage.getItem("invoiceFormData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData(parsedData);
     }
-  },[]);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
