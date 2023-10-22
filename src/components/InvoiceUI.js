@@ -351,17 +351,9 @@ const InvoiceUI = () => {
                 isChecked={formData.customDataSaving}
               >
                 <Text fontWeight="bold" fontSize="md">
-                  <Highlight
-                    query="Save data"
-                    styles={{
-                      px: "1",
-                      py: "1",
-                      fontWeight: "normal",
-                      bg: "blue.100",
-                    }}
-                  >
-                    Save data for future use
-                  </Highlight>
+                  
+                    Save Data for Future Use
+                 
                 </Text>
               </Checkbox>
             
