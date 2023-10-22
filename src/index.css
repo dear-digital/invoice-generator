@@ -55,7 +55,7 @@ button:hover {
   min-height: 90vh;
   margin: 5vh 0;
   background: white;
-  box-shadow: 0 0 4px #aaa, inset 0 10px 0px #333;
+  box-shadow: 0 0 4px #aaa, inset 0 10px 0px #4032a6;
   position: relative;
 }
 
@@ -75,6 +75,7 @@ img.print {
 }
 
 img.save {
+  transform: scale(2);
   position: sticky;
   left: 1em;
   bottom: 1em;

@@ -22,7 +22,7 @@ class Bank extends React.PureComponent {
             <div className='label-input'>
                 <h3>Bank Details for Payment</h3>
                 <div className='from-to'>
-                    <div className='to'>
+                    <div className='to' isRequired>
                         <b className='label'>Bank Name:</b>
                         <p
                             className='bank-name'
