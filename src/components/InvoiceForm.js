@@ -36,26 +36,36 @@ const InvoiceForm = () => {
   };
 
   useEffect(() => {
+
     if (formData.customDataSaving) {
       try {
         localStorage.setItem("invoiceFormData", JSON.stringify(formData));
       } catch (error) {
         console.error("Error saving data:", error);
       }
-    } else {
-      // Remove the data from local storage when customDataSaving is unchecked
-      localStorage.removeItem("invoiceFormData");
+    }
+    else {
+      const savedData = localStorage.getItem("invoiceFormData");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Set customDataSaving to false and keep the rest of the data
+        parsedData.customDataSaving = false;
+        // Update the form state
+        //setFormData(parsedData);
+        // Save the modified data back to local storage
+        localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
+      }
     }
   }, [formData.customDataSaving, formData]);
 
-  useEffect(() => {
+/*   useEffect(() => {
     // Set the "Save data for future use" checkbox based on the stored data
     const savedData = localStorage.getItem("invoiceFormData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData(parsedData);
     }
-  }, []);
+  }, []); */
 
   const handleSubmit = (e) => {
     e.preventDefault();
