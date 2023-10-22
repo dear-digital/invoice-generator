@@ -12,6 +12,10 @@ import {
   FormHelperText,
   Stack,
   Text,
+  Select,
+  Flex,
+  Spacer,
+  Box,
 } from "@chakra-ui/react";
 
 const InvoiceUI = () => {
@@ -21,13 +25,16 @@ const InvoiceUI = () => {
 
     return {
       invoiceNo: parsedData ? parsedData.invoiceNo : "",
-      date: parsedData ? parsedData.date : "",
+      invoiceDate: parsedData ? parsedData.invoiceDate : "",
       billingPeriod: parsedData ? parsedData.billingPeriod : "",
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
       currency: parsedData ? parsedData.currency : "USD",
       taxRate: parsedData ? parsedData.taxRate : 0,
-      services: parsedData && Array.isArray(parsedData.services) ? parsedData.services : [],
+      services:
+        parsedData && Array.isArray(parsedData.services)
+          ? parsedData.services
+          : [],
       customDataSaving: parsedData ? parsedData.customDataSaving : false,
     };
   });
@@ -36,6 +43,25 @@ const InvoiceUI = () => {
   const [tax, setTax] = useState("0.00");
   const [totalAmount, setTotalAmount] = useState("0.00");
 
+  useEffect(() => {
+    if (formData.customDataSaving) {
+      try {
+        localStorage.setItem("invoiceFormData", JSON.stringify(formData));
+      } catch (error) {
+        console.error("Error saving data:", error);
+      }
+    } else {
+      const savedData = localStorage.getItem("invoiceFormData");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Set customDataSaving to false and keep the rest of the data
+        parsedData.customDataSaving = false;
+        // Save the modified data back to local storage
+        localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
+      }
+    }
+  }, [formData.customDataSaving, formData]);
+    
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
@@ -99,7 +125,7 @@ const InvoiceUI = () => {
     const doc = new jsPDF();
     doc.text("Invoice Details", 10, 10);
     doc.text(`Invoice No: ${formData.invoiceNo}`, 10, 20);
-    doc.text(`Date: ${formData.date}`, 10, 30);
+    doc.text(`Invoice Date: ${formData.invoiceDate}`, 10, 30);
     doc.text(`Billing Period: ${formData.billingPeriod}`, 10, 40);
     doc.text(`From: ${formData.from}`, 10, 50);
     doc.text(`To: ${formData.to}`, 10, 60);
@@ -111,83 +137,140 @@ const InvoiceUI = () => {
   };
 
   return (
-    <Container>
-      <Heading as="h1" size="xl" textAlign="center">
+    <Container maxW="1000px">
+      <Heading
+        as="h1"
+        size="xl"
+        textAlign="center"
+        style={{ padding: "50px 10px" }}
+      >
         Invoice Generator
       </Heading>
       <form onSubmit={handleSubmit}>
-        <Input
-          name="invoiceNo"
-          placeholder="Invoice No"
-          onChange={handleChange}
-          value={formData.invoiceNo}
-        />
-        <Input
-          name="date"
-          placeholder="Date"
-          onChange={handleChange}
-          value={formData.date}
-        />
-        <Input
-          name="billingPeriod"
-          placeholder="Billing Period"
-          onChange={handleChange}
-          value={formData.billingPeriod}
-        />
-        <Input
-          name="from"
-          placeholder="From"
-          onChange={handleChange}
-          value={formData.from}
-        />
-        <Input
-          name="to"
-          placeholder="To"
-          onChange={handleChange}
-          value={formData.to}
-        />
-        <FormControl id="currency">
-          <FormLabel>Currency</FormLabel>
-          <Input
-            name="currency"
-            onChange={handleChange}
-            value={formData.currency}
-          />
-        </FormControl>
-        <FormControl id="taxRate">
-          <FormLabel>Tax Rate (%)</FormLabel>
-          <Input
-            name="taxRate"
-            type="number"
-            onChange={handleChange}
-            value={formData.taxRate}
-          />
-        </FormControl>
+        <Flex style={{ paddingBottom: "20px" }}>
+          <Spacer />
+        </Flex>
 
-        <Stack spacing={4}>
+        <Flex style={{ paddingBottom: "20px" }}>
+          <FormControl id="from" w="300px">
+            <FormLabel>From</FormLabel>
+            <Input
+              name="from"
+              placeholder="From"
+              onChange={handleChange}
+              value={formData.from}
+            />
+          </FormControl>
+          <Spacer />
+          <FormControl id="invoiceNo" isRequired w="300px">
+            <FormLabel>Invoice No</FormLabel>
+            <Input
+              name="invoiceNo"
+              placeholder="Invoice No"
+              onChange={handleChange}
+              value={formData.invoiceNo}
+            />
+          </FormControl>
+        </Flex>
+
+        <Flex style={{ paddingBottom: "20px" }}>
+          <FormControl id="to" w="300px">
+            <FormLabel>To</FormLabel>
+            <Input
+              name="to"
+              placeholder="To"
+              onChange={handleChange}
+              value={formData.to}
+            />
+          </FormControl>
+          <Spacer />
+          <FormControl id="invoiceDate" w="300px">
+            <FormLabel>Invoice Date</FormLabel>
+            <Input
+              name="invoiceDate"
+              placeholder="Date"
+              onChange={handleChange}
+              value={formData.date}
+            />
+          </FormControl>
+        </Flex>
+        <Flex style={{ paddingBottom: "20px" }}>
+          <FormControl id="billingPeriod" w="200px">
+            <FormLabel>Billing Period</FormLabel>
+            <Input
+              name="billingPeriod"
+              placeholder="Billing Period"
+              onChange={handleChange}
+              value={formData.billingPeriod}
+            />
+          </FormControl>
+          <Spacer />
+          <FormControl id="dueDate" w="300px">
+            <FormLabel>Due Date</FormLabel>
+            <Input
+              name="dueDate"
+              placeholder="Date"
+              onChange={handleChange}
+              value={formData.dueDate}
+            />
+          </FormControl>
+        </Flex>
+
+        <Flex style={{ paddingBottom: "20px" }}>
+          <FormControl id="currency" w="300px">
+            <FormLabel>Currency</FormLabel>
+            <Select
+              name="currency"
+              placeholder="Select Currency"
+              onChange={handleChange}
+              value={formData.currency}
+            >
+              <option value="Rs.">Rs.</option>
+              <option value="USD">USD</option>
+            </Select>
+          </FormControl>
+          <Spacer />
+          <FormControl id="taxRate" w="300px">
+            <FormLabel>Tax Rate (%)</FormLabel>
+            <Input
+              name="taxRate"
+              type="number"
+              onChange={handleChange}
+              value={formData.taxRate}
+            />
+          </FormControl>
+        </Flex>
+        
+        <FormLabel>Services</FormLabel>
+        <Stack spacing={4} gap={4}>
           {formData.services.map((service, index) => (
-            <div key={index}>
+            <Flex key={index}>
               <Input
+                width="700px"
                 name="description"
                 placeholder="Service Description"
                 value={service.description}
                 onChange={(e) => handleServiceChange(e, index)}
               />
+              <Spacer />
               <Input
+                width="150px"
                 name="amount"
                 type="number"
                 placeholder="Amount"
                 value={service.amount}
                 onChange={(e) => handleServiceChange(e, index)}
               />
+              <Spacer />
               <Button onClick={() => removeService(index)}>
-                Remove Service
+                Remove
               </Button>
-            </div>
+            </Flex>
           ))}
         </Stack>
-
-        <Button onClick={addService}>Add Service</Button>
+        <div style={{ marginTop: "20px" }}>
+            <Button onClick={addService}>Add Service</Button>
+        </div>
 
         <div style={{ marginTop: "20px" }}>
           <Checkbox
@@ -205,9 +288,15 @@ const InvoiceUI = () => {
       </form>
 
       <div>
-        <Text>Subtotal: {formData.currency} {subtotal}</Text>
-        <Text>Tax: {formData.currency} {tax}</Text>
-        <Text>Total Amount: {formData.currency} {totalAmount}</Text>
+        <Text>
+          Subtotal: {formData.currency} {subtotal}
+        </Text>
+        <Text>
+          Tax: {formData.currency} {tax}
+        </Text>
+        <Text>
+          Total Amount: {formData.currency} {totalAmount}
+        </Text>
       </div>
     </Container>
   );
