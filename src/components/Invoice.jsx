@@ -28,46 +28,44 @@ const InvoiceForm = () => {
             hsnSACCode: '',
             quantity: 0,
             unitPrice: 0,
-            total: 0, // Add a total property for each service
+            total: 0, 
         },
     ]);
+
     const calculateTotalAmount = () => {
-        let total2 = 0;
+        let total = 0;
         services.forEach((service) => {
-          total2 += parseFloat(service.total || 0); // Ensure that total is treated as a number and handle any potential NaN values
+            total += parseFloat(service.total || 0);
         });
-        return total2.toFixed(1); // Return the total as a string with 2 decimal places
-      };
+        return total.toFixed(2);
+    };
       
 
     const handleServiceInputChange = (event, index, field) => {
-        // Clone the services array to avoid mutating state directly
         const newServices = [...services];
-        // Update the field for the specific service
         newServices[index][field] = event.target.value;
 
+        // Calculate the total for the specific service
+        const unitPrice = parseFloat(newServices[index].unitPrice);
+        const quantity = parseFloat(newServices[index].quantity);
+        if (!isNaN(unitPrice) && !isNaN(quantity)) {
+            newServices[index].total = (unitPrice * quantity).toFixed(2);
+        } else {
+            newServices[index].total = 0;
+        }
+
+        setServices(newServices);
+        
         // Calculate the total amount for all services
         const totalAmount = calculateTotalAmount();
 
         // Update the total amount in the formData
         setFormData((prevData) => ({ ...prevData, totalAmount }));
+    };
 
-    // Calculate the total for the specific service
-    const unitPrice = parseFloat(newServices[index].unitPrice);
-    const quantity = parseFloat(newServices[index].quantity);
-    if (!isNaN(unitPrice) && !isNaN(quantity)) {
-        newServices[index].total = (unitPrice * quantity).toFixed(2);
-    } else {
-        newServices[index].total = 0; // Reset total if quantity or unit price is not a number
-    }
-
-    // Set the updated services array in the state
-    setServices(newServices);
-};
-
-const addServiceRow = () => {
-    setServices([...services, { description: '', hsnSACCode: '', quantity: '', unitPrice: '', total: '' }]);
-};
+    const addServiceRow = () => {
+        setServices([...services, { description: '', hsnSACCode: '', quantity: 0, unitPrice: 0, total: 0 }]);
+    };
 
 
 
@@ -492,7 +490,7 @@ return (
                         <Button variant="contained" color="primary" style={{ marginLeft: '10px' }}>
                             Print PDF
                         </Button> */}
-                    <PDFGenerator formData={formData} /> {/* Render the PDFGenerator component */}
+                    <PDFGenerator formData={formData}  services={services} /> {/* Render the PDFGenerator component */}
                     <Button
                         variant="contained"
                         style={{ margin: '10px' }}
