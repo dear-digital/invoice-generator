@@ -21,24 +21,48 @@ const InvoiceForm = () => {
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
       services: parsedData ? parsedData.services : "",
-      customDataSaving: parsedData ? parsedData.customDataSaving : false,
+      customDataSaving: parsedData ? parsedData.customDataSaving : formData.customDataSaving,
     };
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    //console.log(value);
+
     const newValue = type === "checkbox" ? checked : value;
 
     setFormData((prevData) => ({
       ...prevData,
       [name]: newValue,
     }));
+    console.log(formData.customDataSaving);
+    // Update local storage here for all fields when any field is edited
+    
   };
 
   useEffect(() => {
-    // Store the updated formData in local storage
-    localStorage.setItem("invoiceFormData", JSON.stringify(formData));
+    if (formData.customDataSaving) {
+      try {
+        localStorage.setItem("invoiceFormData", JSON.stringify(formData));
+      } catch (error) {
+        console.error("Error saving data:", error);
+      }
+    }
+    else {
+      formData.customDataSaving = false;
+    }
   }, [formData]);
+
+  useEffect(() => {
+
+    // Set the "Save data for future use" checkbox based on the stored data
+    const savedData = localStorage.getItem("invoiceFormData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFormData(parsedData);
+    }
+  },[]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,6 +74,10 @@ const InvoiceForm = () => {
     doc.text("Invoice Details", 10, 10);
     doc.text(`Invoice No: ${formData.invoiceNo}`, 10, 20);
     doc.text(`Date: ${formData.date}`, 10, 30);
+    doc.text(`Billing Period: ${formData.billingPeriod}`, 10, 40);
+    doc.text(`From: ${formData.from}`, 10, 50);
+    doc.text(`To: ${formData.to}`, 10, 60);
+    doc.text(`Services: ${formData.services}`, 10, 70);
     // // Add more text and formatting for the PDF
     doc.save("invoice.pdf");
   };
@@ -103,7 +131,9 @@ const InvoiceForm = () => {
         >
           Save data for future use
         </Checkbox>
-        <Button type="submit">Generate Invoice</Button>
+        <div style={{ marginTop: "50px" }}>
+          <Button type="submit">Generate Invoice</Button>
+        </div>
       </form>
     </Container>
   );
