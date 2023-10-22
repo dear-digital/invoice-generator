@@ -31,12 +31,10 @@ const InvoiceUI = () => {
       to: parsedData ? parsedData.to : "",
       currency: parsedData ? parsedData.currency : "Rs",
       taxRate: parsedData ? parsedData.taxRate : 0,
-      services: parsedData.services.map((service, index) => ({
-        ...service,
-        serialNumber: index + 1,
-      }))
-        ? parsedData.services
-        : [],
+      services:
+        parsedData && Array.isArray(parsedData.services)
+          ? parsedData.services
+          : [],
       customDataSaving: parsedData ? parsedData.customDataSaving : false,
     };
   });
@@ -87,30 +85,17 @@ const InvoiceUI = () => {
   };
 
   const addService = () => {
-    /* setFormData((prevData) => ({
+    setFormData((prevData) => ({
       ...prevData,
       services: [...prevData.services, { description: "", amount: "" }],
-    })); */
-      console.log(formData.services.length);
-      const newService = {
-        description: "",
-        amount: "",
-        serialNumber: formData.services.length + 1,
-      };
-      setFormData((prevData) => ({
-        ...prevData,
-        services: [...prevData.services, newService],
-      }));
+    }));
+      
   };
 
   const removeService = (index) => {
     const updatedServices = [...formData.services];
     updatedServices.splice(index, 1);
 
-    // Update serial numbers
-    for (let i = index; i < updatedServices.length; i++) {
-      updatedServices[i].serialNumber = i + 1;
-    }
     setFormData((prevData) => ({
       ...prevData,
       services: updatedServices,
@@ -262,12 +247,13 @@ const InvoiceUI = () => {
           {formData.services.map((service, index) => (
             <Flex key={index}>
               <Input
-                width="10px"
+                width="50px"
                 name="serialNumber"
+                placeholder="No."
                 value={service.serialNumber}
-                isReadOnly
+                onChange={(e) => handleServiceChange(e, index)}
               />
-              <span> {service.serialNumber} </span>
+              <Spacer />
               <Input
                 width="600px"
                 name="description"
