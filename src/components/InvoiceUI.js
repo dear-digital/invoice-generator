@@ -342,8 +342,7 @@ const InvoiceUI = () => {
         <Divider style={{ margin: "20px 0" }} />
 
         <div style={{ marginTop: "20px" }} className="print-hidden">
-          <Card>
-            <CardBody>
+          
               <Checkbox
                 spacing="0.5rem"
                 size="md"
@@ -365,8 +364,7 @@ const InvoiceUI = () => {
                   </Highlight>
                 </Text>
               </Checkbox>
-            </CardBody>
-          </Card>
+            
         </div>
 
         <div
