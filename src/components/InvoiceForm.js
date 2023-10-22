@@ -301,7 +301,7 @@ const InvoiceForm = () => {
               <Tooltip label="Remove this Service" className="print-hidden">
                 <IconButton
                   isRound={true}
-                  colorScheme="blue"
+                  colorScheme="red"
                   aria-label="Remove"
                   size="sm"
                   icon={<CloseIcon />}
@@ -314,6 +314,8 @@ const InvoiceForm = () => {
 
         <div style={{ marginTop: "20px" }} className="print-hidden">
           <Button
+            colorScheme="gray"
+            variant="solid"
             onClick={addService}
             isDisabled={isAddServiceButtonDisabled()}
           >
@@ -396,7 +398,7 @@ const InvoiceForm = () => {
           </AbsoluteCenter>
         </Box>
       </Heading>
-      <div style={{ margin: "80px" }}></div>
+      <div style={{ margin: "80px" }} className="print-hidden"></div>
     </Container>
   );
 };
