@@ -134,9 +134,9 @@ const InvoiceForm = () => {
       formData.to,
       formData.invoiceNo,
       formData.invoiceDate,
-      formData.dueDate,
       formData.taxRate,
-    ].some((field) => field.trim() === "");
+      formData.services,
+    ].some((field) => String(field).trim() === "");
 
     //console.log(hasEmptyRequiredFields);
 
@@ -201,6 +201,7 @@ const InvoiceForm = () => {
           <FormControl id="invoiceNo" isRequired w="300px">
             <FormLabel>Invoice No</FormLabel>
             <Input
+              type="number"
               name="invoiceNo"
               placeholder="Invoice No"
               onChange={handleChange}
