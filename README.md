@@ -6,12 +6,11 @@
 
 ### Features of the Project
 
-- Used local storage, so the invoices and companies detials can be saved everytime.
-- Can download invoice in PDF format.
-- Can download invoice in Image format.
-- Also we can have as many client we want and save them so that next time we want to generate a invoice for them we can directly add the client.
-- Also we can list down multiple products so it will save time when adding in invoice.
-- An intuitive dashboard where you can see all the details on one page.
+- Utilizes local storage to save invoice and company details persistently.
+- Allows the download of invoices in both PDF and image formats.
+- Offers the capability to add and save multiple clients for quick access when generating invoices for them in the future.
+- Provides the option to create a list of multiple products, saving time when adding them to invoices.
+- Features an intuitive dashboard that presents all relevant details on a single page.
 
 ### Screenshots
 
