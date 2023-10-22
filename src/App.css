@@ -1,0 +1,19 @@
+@media print {
+      .print-hidden {
+        display: none;
+      }
+
+      .print-media {
+        width: 350px;
+        margin: 50px auto !important;
+        font-size: 15px !important;
+        }
+
+      .print-element{
+        display: block !important;
+      }
+    }
+
+.print-element{
+        display: none;
+      }

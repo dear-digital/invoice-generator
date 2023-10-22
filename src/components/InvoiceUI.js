@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import '../App.css'
 import jsPDF from "jspdf";
 import {
   Container,
@@ -32,6 +33,8 @@ import {
   Td,
   TableCaption,
   TableContainer,
+  Divider,
+  AbsoluteCenter,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 
@@ -47,7 +50,7 @@ const InvoiceUI = () => {
       billingPeriod: parsedData ? parsedData.billingPeriod : "",
       from: parsedData ? parsedData.from : "",
       to: parsedData ? parsedData.to : "",
-      currency: parsedData ? parsedData.currency : "Rs",
+      currency: parsedData ? parsedData.currency : "₹",
       taxRate: parsedData ? parsedData.taxRate : 0,
       services:
         parsedData && Array.isArray(parsedData.services)
@@ -80,7 +83,7 @@ const InvoiceUI = () => {
         const parsedData = JSON.parse(savedData);
         // Set customDataSaving to false and keep the rest of the data
         parsedData.customDataSaving = false;
-        //calculateTotals(parsedData.services)
+        
         // Save the modified data back to local storage
         localStorage.setItem("invoiceFormData", JSON.stringify(parsedData));
         
@@ -96,6 +99,7 @@ const InvoiceUI = () => {
       ...prevData,
       [name]: newValue,
     }));
+    calculateTotals([...formData.services]);
   };
 
   const handleServiceChange = (e, index) => {
@@ -116,6 +120,14 @@ const InvoiceUI = () => {
       services: [...prevData.services, { description: "", amount: "" }],
     }));
       
+  };
+  
+  const isServiceValid = (service) => {
+    return service.description.trim() !== "" && service.amount.trim() !== "";
+  };
+
+  const isAddServiceButtonDisabled = () => {
+    return formData.services.some((service) => !isServiceValid(service));
   };
 
   const removeService = (index) => {
@@ -144,25 +156,8 @@ const InvoiceUI = () => {
     setTotalAmount(totalAmount);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    generatePDF(formData);
-  };
+ 
 
-  const generatePDF = (formData) => {
-    const doc = new jsPDF();
-    doc.text("Invoice Details", 10, 10);
-    doc.text(`Invoice No: ${formData.invoiceNo}`, 10, 20);
-    doc.text(`Invoice Date: ${formData.invoiceDate}`, 10, 30);
-    doc.text(`Billing Period: ${formData.billingPeriod}`, 10, 40);
-    doc.text(`From: ${formData.from}`, 10, 50);
-    doc.text(`To: ${formData.to}`, 10, 60);
-    doc.text(`Currency: ${formData.currency}`, 10, 70);
-    doc.text(`Tax Rate: ${formData.taxRate}%`, 10, 80);
-
-
-    doc.save("invoice.pdf");
-  };
 
   return (
     <Container maxW="1000px">
@@ -170,11 +165,24 @@ const InvoiceUI = () => {
         as="h1"
         size="xl"
         textAlign="center"
-        style={{ padding: "50px 10px" }}
+        style={{ padding: "50px 10px 10px 10px" }}
+        className="print-hidden"
       >
         Invoice Generator
       </Heading>
-      <form onSubmit={handleSubmit}>
+
+      <Heading
+        as="h2"
+        size="lg"
+        textAlign="left"
+        style={{ textTransform: "uppercase" }}
+        className="print-element"
+      >
+        Invoice
+      </Heading>
+
+      <Divider style={{ margin: "20px 0" }} />
+      <form>
         <Flex style={{ paddingBottom: "20px" }}>
           <Spacer />
         </Flex>
@@ -224,7 +232,7 @@ const InvoiceUI = () => {
           </FormControl>
         </Flex>
         <Flex style={{ paddingBottom: "20px" }}>
-          <FormControl id="billingPeriod" w="200px">
+          <FormControl id="billingPeriod" w="300px">
             <FormLabel>Billing Period</FormLabel>
             <Input
               name="billingPeriod"
@@ -272,6 +280,8 @@ const InvoiceUI = () => {
           </FormControl>
         </Flex>
 
+        <Divider style={{ margin: "20px 0" }} />
+
         <FormLabel>Services</FormLabel>
         <Stack spacing={4} gap={4}>
           {formData.services.map((service, index) => (
@@ -285,6 +295,7 @@ const InvoiceUI = () => {
               />
 
               <Input
+                required
                 width="700px"
                 name="description"
                 placeholder="Service Description"
@@ -292,7 +303,10 @@ const InvoiceUI = () => {
                 onChange={(e) => handleServiceChange(e, index)}
               />
               <Spacer />
+              <span style={{ margin: "0 5px 0 8px" }}>{formData.currency}</span>
+
               <Input
+                required
                 width="150px"
                 name="amount"
                 type="number"
@@ -302,7 +316,7 @@ const InvoiceUI = () => {
               />
               <Spacer />
 
-              <Tooltip label="Remove this Service">
+              <Tooltip label="Remove this Service" className="print-hidden">
                 <IconButton
                   isRound={true}
                   colorScheme="blue"
@@ -316,11 +330,18 @@ const InvoiceUI = () => {
           ))}
         </Stack>
 
-        <div style={{ marginTop: "20px" }}>
-          <Button onClick={addService}>Add Service</Button>
+        <div style={{ marginTop: "20px" }} className="print-hidden">
+          <Button
+            onClick={addService}
+            isDisabled={isAddServiceButtonDisabled()}
+          >
+            Add Service
+          </Button>
         </div>
 
-        <div style={{ marginTop: "20px" }}>
+        <Divider style={{ margin: "20px 0" }} />
+
+        <div style={{ marginTop: "20px" }} className="print-hidden">
           <Card>
             <CardBody>
               <Checkbox
@@ -348,7 +369,10 @@ const InvoiceUI = () => {
           </Card>
         </div>
 
-        <div style={{ width: "350px", margin: "20px 0 auto auto" }}>
+        <div
+          style={{ width: "350px", margin: "20px 0 auto auto" }}
+          className="print-media"
+        >
           <TableContainer>
             <Table variant="simple" size="md">
               <Tbody>
@@ -364,27 +388,41 @@ const InvoiceUI = () => {
                     {formData.currency} {tax}
                   </Td>
                 </Tr>
-              </Tbody>
-              <Tfoot>
                 <Tr>
-                  <Th fontSize="14px">Total Amount</Th>
+                  <Th fontSize="15px">Total Amount</Th>
                   <Th isNumeric fontSize="15px">
                     {formData.currency} {totalAmount}
                   </Th>
                 </Tr>
-              </Tfoot>
+              </Tbody>
             </Table>
           </TableContainer>
         </div>
 
-        <div style={{ margin: "0 auto", width: "fit-content" }}>
-          <Button style={{ marginTop: "150px" }} type="submit">
-            Generate Invoice
-          </Button>
+        <div
+          style={{ margin: "0 auto", width: "fit-content" }}
+          className="print-hidden"
+        >
+          <div style={{ marginTop: "20px" }}>
+            <Button onClick={() => window.print()}>Print Invoice</Button>
+          </div>
         </div>
       </form>
-
-      <div style={{ margin: "100px" }}></div>
+      <Heading
+        as="h3"
+        size="sm"
+        textAlign="left"
+        style={{ textTransform: "uppercase" }}
+        className="print-element"
+      >
+        <Box position="relative" padding="10">
+          <Divider />
+          <AbsoluteCenter bg="white" px="4">
+            Thank You
+          </AbsoluteCenter>
+        </Box>
+      </Heading>
+      <div style={{ margin: "80px" }}></div>
     </Container>
   );
 };
