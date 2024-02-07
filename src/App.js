@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import Navbar from './components/Navbar';
-import Home from './components/Home'; // Adjusted for consistency
+import { Home } from './components/Home'; // Adjusted for consistency
 import Invoice from './components/Invoice';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'; // Changed to HashRouter
 
